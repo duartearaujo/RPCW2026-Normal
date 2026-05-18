@@ -1,0 +1,152 @@
+1 ---
+select ?p ?e where {
+    ?p a :Personagem ;
+       :temEspecie ?e .
+}
+
+2 ---
+select ?o ?l where {
+    :Mestre_Corvo a :Corvo ;
+                  :possui ?o ;
+                  :empoleiradoEm ?l .
+}
+
+3 ---
+select ?c where {
+    :Mestre_Raposa a :Raposa ;
+                   :temCaracteristica ?c .
+}
+
+4 ---
+select ?p where {
+    ?p a :Personagem ;
+       :enganou :Mestre_Corvo .
+}
+
+12 ----
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+select ?j where {
+    ?j a :Jogo ;
+       :criadoPor ?a .
+    ?a a :Autor ;
+       :nome "Klaus Teuber"
+}
+
+13 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+select ?j ?pnome where {
+    ?p a :Premio ;
+       :nome ?pnome ;
+       :premiou ?j .
+}
+
+14 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+select ?jnome where {
+    ?j a :Jogo ;
+       :nome ?jnome ;
+       :temCategoria ?c .
+    ?c :nome "Family" .
+}
+
+15 ---
+
+
+16 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+select ?jnome where {
+    ?m a :Mecanica ;
+       :nome "Dice Rolling" ;
+       :mecanicaDe/:nome ?jnome .
+}
+
+17 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+SELECT ?nEditora (COUNT(?j) AS ?numJogos)
+WHERE {
+    ?e a :Editora ;
+       :nome ?nEditora ;
+       :publicou ?j .
+}
+GROUP BY ?nEditora
+ORDER BY DESC(?numJogos)
+
+18 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+SELECT ?nCategoria (COUNT(?j) AS ?numJogos)
+WHERE {
+    ?j a :Jogo ;
+          :temCategoria ?c .
+    ?c :nome ?nCategoria .
+}
+GROUP BY ?nCategoria
+ORDER BY DESC(?numJogos)
+
+19 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+SELECT ?idJogo ?nJogo (GROUP_CONCAT(?nMecanica ; separator=", ") AS ?m)
+WHERE {
+    ?j a :Jogo ;
+          :id ?idJogo ;
+          :nome ?nJogo .
+    ?m a :Mecanica ;
+              :nome ?nMecanica ;
+              :mecanicaDe ?j .
+}
+GROUP BY ?idJogo ?nJogo
+HAVING (COUNT(DISTINCT ?m) > 3)
+ORDER BY DESC(COUNT(DISTINCT ?m))
+
+20 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+SELECT DISTINCT ?nJogo ?nAutor ?nMecanica
+WHERE {
+    ?j a :Jogo ;
+          :nome ?nJogo ;
+          :temCategoria :Family .
+    ?a a :Autor ;
+           :nome ?nAutor ;
+           :criou ?j .
+    ?m a :Mecanica ;
+              :nome ?nMecanica ;
+              :mecanicaDe ?j .
+}
+ORDER BY ?nJogo ?nAutor ?nMecanica
+
+22 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+construct{
+    ?j :publicadoPor ?e
+}
+where{
+    ?e a :Editora ;
+       :publicou ?j .
+}
+
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+insert{
+    ?j :publicadoPor ?e
+}
+where{
+    ?e a :Editora ;
+       :publicou ?j .
+}
+
+24 ---
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+construct{
+    ?j :usaMecanica ?m
+}
+where{
+    ?m a :Mecanica ;
+       :mecanicaDe ?j .
+}
+
+PREFIX : <http://www.di.uminho.pt/rpcw2026/PG58806/>
+insert{
+    ?j :usaMecanica ?m
+}
+where{
+    ?m a :Mecanica ;
+       :mecanicaDe ?j .
+}
